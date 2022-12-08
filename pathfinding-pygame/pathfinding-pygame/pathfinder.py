@@ -72,4 +72,4 @@ class PathFinder:
     def draw_path(self, path_squares: List[Square]):
         for path_square in path_squares:
             path_square.draw(self.window, Colors.GRAY.value)
-            pg.time.delay(100)
+            pg.time.delay(10)

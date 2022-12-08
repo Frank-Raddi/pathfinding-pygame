@@ -46,7 +46,9 @@ class Application:
         running = True
         while running:
 
+            self.update_chips()
             self.path_finder.draw_squares()
+            
             if self.path_finder.path_able_to_find:
                 path = self.path_finder.find_path(self.board.board_matrix)
                 self.path_finder.draw_path(path)
@@ -57,11 +59,14 @@ class Application:
                 if event.type == pg.MOUSEBUTTONUP and event.button == Buttons.MOUSE_LEFT.value:
                     self.choose_square()
 
-                if event.type == pg.MOUSEBUTTONUP and event.button == Buttons.MOUSE_RIGHT.value:
-                    self.clear_board()
+                if (event.type == pg.MOUSEBUTTONDOWN and event.button == Buttons.MOUSE_RIGHT.value) or pg.mouse.get_pressed()[2] == True:
+                    self.create_obsticle()
 
                 if event.type == pg.KEYDOWN and event.key == Buttons.R_KEYBOARD.value:
                     self.new_board()
+                
+                if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    self.clear_board()
 
         pg.quit()
 
@@ -72,6 +77,19 @@ class Application:
         """
         self.board.recreate_obstacles()
         self.clear_board()
+
+    def create_obsticle(self):
+        """
+        Creates new obstacle on board.
+
+        :return: None
+        """
+        clicked_square_pos = Square.convert_to_board_coordinates(pg.mouse.get_pos())
+        clicked_square = Square(*clicked_square_pos)
+        if self.board.is_square_empty(clicked_square):
+            self.board.add_obstacle(clicked_square)
+            self.board.draw_obstacles()
+            self.board.draw_game_pieces()
 
     def choose_square(self):
         clicked_square_pos = Square.convert_to_board_coordinates(pg.mouse.get_pos())
@@ -88,3 +106,12 @@ class Application:
         """
         self.path_finder.reset()
         self.board.draw_board()
+
+    def update_pieces(self):
+        """
+        Update chips on the board.
+
+        :return: None
+        """
+        for chip in self.board.chips:
+            chip.update()

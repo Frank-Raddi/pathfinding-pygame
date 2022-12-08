@@ -8,10 +8,10 @@ class Dimension(Enum):
     """
     Class for storing dimensions of screen/board and squares.
     """
-    SQUARE_WIDTH = 80
-    SQUARE_HEIGHT = 80
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 800
+    SQUARE_WIDTH = 10
+    SQUARE_HEIGHT = 10
+    SCREEN_WIDTH = 1000
+    SCREEN_HEIGHT = 1000
 
     @classmethod
     def board_height(cls) -> int:

@@ -6,6 +6,7 @@ import pygame as pg
 
 from utils import Dimension, Colors
 from square import Square
+from game_pieces import Chip
 
 
 class Board:
@@ -35,7 +36,7 @@ class Board:
         """
         self.window = window
         self.board_matrix = np.full(Dimension.board_size(), 1)
-        self.maximum_obstacles_on_board = 10
+        self.maximum_obstacles_on_board = 1000
         self.obstacles = self.create_obstacles()
 
     def draw_board(self):
@@ -111,3 +112,21 @@ class Board:
         self.board_matrix = np.full(Dimension.board_size(), 1)
         self.obstacles = self.create_obstacles()
 
+    def add_obstacle(self, obstacle: Square):
+        """
+        Adds obstacle to board and updates self.matrix.
+
+        :param obstacle: A square of board which user clicked.
+        :return: None
+        """
+        self.obstacles.append(obstacle)
+        self.board_matrix[obstacle.y][obstacle.x] = 0
+
+    def draw_game_pieces(self):
+        """
+        Draws game pieces on the board.
+
+        :return: None
+        """
+        for chip in Chip.chips:
+            chip.draw(self.window)
