@@ -65,7 +65,7 @@ class GameState:
                                 2, -config.ball_radius])
         initial_place = config.ball_starting_place_ratio * config.resolution
 
-        self.create_white_ball()
+        #self.create_white_ball()
         # randomizes the sequence of balls on the table
         ball_placement_sequence = list(range(1, config.total_ball_num))
         random.shuffle(ball_placement_sequence)
@@ -86,8 +86,8 @@ class GameState:
         self.reset_state()
         self.generate_table()
         self.set_pool_balls()
-        self.cue = cue.Cue(self.white_ball)
-        self.all_sprites.add(self.cue)
+        #self.cue = cue.Cue(self.white_ball)
+        #self.all_sprites.add(self.cue)
 
     def reset_state(self):
         # game state variables
@@ -125,7 +125,65 @@ class GameState:
                 break
         return return_value
 
+    #region generate table
+
     def generate_table(self):
+        table_side_points = np.empty((1, 2))
+        # holes_x and holes_y holds the possible xs and ys of the table holes
+        # with a position ID in the second tuple field
+        # so the top left hole has id 1,1
+        holes_x = [(config.table_margin + 100, 1), (config.resolution[0] /
+                                              2, 2), (config.resolution[0] - config.table_margin, 3)]
+        holes_y = [(config.table_margin, 1),
+                   (config.resolution[1] - config.table_margin, 2)]
+        # next three lines are a hack to make and arrange the hole coordinates
+        # in the correct sequence
+        all_hole_positions = np.array(
+            list(itertools.product(holes_y, holes_x)))
+        all_hole_positions = np.fliplr(all_hole_positions)
+        all_hole_positions = np.vstack(
+            (all_hole_positions[:3], np.flipud(all_hole_positions[3:])))
+        for hole_pos in all_hole_positions:
+            self.holes.add(table_sprites.Hole(hole_pos[0][0], hole_pos[1][0]))
+            # this will generate the diagonal, vertical and horizontal table
+            # pieces which will reflect the ball when it hits the table sides
+            #
+            # they are generated using 4x2 offset matrices (4 2d points around the hole)
+            # with the first point in the matrix is the starting point and the
+            # last point is the ending point, these 4x2 matrices are
+            # concatenated together
+            #
+            # the martices must be flipped using numpy.flipud()
+            # after reflecting them using 2x1 reflection matrices, otherwise
+            # starting and ending points would be reversed
+            #if hole_pos[0][1] == 2:
+                # hole_pos[0,1]=2 means x coordinate ID is 2 which means this
+                # hole is in the middle
+            #    offset = config.middle_hole_offset
+            #else:
+            offset = config.side_hole_offset
+            #if hole_pos[1][1] == 2:
+            #    offset = np.flipud(offset) * [1, -1]
+            #if hole_pos[0][1] == 1:
+            #    offset = np.flipud(offset) * [-1, 1]
+            table_side_points = np.append(
+                table_side_points, [hole_pos[0][0], hole_pos[1][0]] + offset, axis=0)
+        # deletes the 1st point in array (leftover form np.empty)
+        table_side_points = np.delete(table_side_points, 0, 0)
+        for num, point in enumerate(table_side_points[:-1]):
+            # this will skip lines inside the circle
+            if num % 4 != 1:
+                self.table_sides.append(table_sprites.TableSide(
+                    [point, table_side_points[num + 1]]))
+        self.table_sides.append(table_sprites.TableSide(
+            [table_side_points[-1], table_side_points[0]]))
+        self.table_coloring = table_sprites.TableColoring(
+            config.resolution, config.table_side_color, table_side_points)
+        self.all_sprites.add(self.table_coloring)
+        #self.all_sprites.add(self.holes)
+        #graphics.add_separation_line(self.canvas)
+
+    def generate_table_old(self):
         table_side_points = np.empty((1, 2))
         # holes_x and holes_y holds the possible xs and ys of the table holes
         # with a position ID in the second tuple field
@@ -180,6 +238,8 @@ class GameState:
         self.all_sprites.add(self.table_coloring)
         self.all_sprites.add(self.holes)
         graphics.add_separation_line(self.canvas)
+
+    #endregion    
 
     def game_over(self, p1_won):
         font = config.get_default_font(config.game_over_label_font_size)
