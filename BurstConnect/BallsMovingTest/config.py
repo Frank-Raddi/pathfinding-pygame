@@ -21,12 +21,12 @@ def set_max_resolution():
 fullscreen = False
 # fullscreen resolution can only be known after initialising the screen
 if not fullscreen:
-    resolution = np.array([1000, 500])
+    resolution = np.array([1600, 900])
 window_caption = "Pool"
 fps_limit = 60
 
 # table settings
-table_margin = 40
+table_margin = 5
 table_side_color = (200, 200, 0)
 table_color = (0, 100, 0)
 separation_line_color = (200, 200, 200)
@@ -82,7 +82,7 @@ ball_stripe_thickness = 2
 ball_stripe_point_num = 25
 # where the balls will be placed at the start
 # relative to screen resolution
-ball_starting_place_ratio = [0.75, 0.5]
+ball_starting_place_ratio = [np.random.randint(2, 8)*.1, np.random.randint(2, 8)*.1]
 # in fullscreen mode the resolution is only available after initialising the screen
 # and if the screen wasn't initialised the resolution variable won't exist
 if 'resolution' in locals():
