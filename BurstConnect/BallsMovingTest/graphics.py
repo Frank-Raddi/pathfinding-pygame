@@ -7,8 +7,8 @@ import event
 
 class Canvas:
     def __init__(self):
+        config.set_max_resolution()
         if config.fullscreen:
-            config.set_max_resolution()
             self.surface = pygame.display.set_mode(config.resolution, pygame.FULLSCREEN)
         else:
             self.surface = pygame.display.set_mode(config.resolution)

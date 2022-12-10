@@ -9,6 +9,7 @@ import collisions
 import config
 import event
 import physics
+import os
 
 
 class Ball():
@@ -17,7 +18,6 @@ class Ball():
         self.velocity = np.zeros(2, dtype=float)
 
         self.velocity = np.random.rand(2) * np.random.randint(-8, 8)
-        print(type(np.random.random((3, 3))))
 
     def apply_force(self, force, time=1):
         # f = ma, v = u + at -> v = u + (f/m)*t
@@ -75,13 +75,15 @@ class BallSprite(pygame.sprite.Sprite):
         self.number = ball_number
         #self.color = config.ball_colors[ball_number]
         self.color = (255, 255, 255)
-        if ball_number <= 8:
-            self.ball_type = BallType.Solid
-            self.ball_stripe = SolidBall()
-        else:
-            self.ball_type = BallType.Striped
-            self.ball_stripe = StripedBall()
+        #if ball_number <= 8:
+        self.ball_type = BallType.Solid
+        self.ball_stripe = SolidBall()
+        #else:
+        #    self.ball_type = BallType.Striped
+        #    self.ball_stripe = StripedBall()
         self.ball = Ball()
+        self.image = pygame.image.load(
+            os.path.join('BurstConnect\\BurstConnect\\BallsMovingTest\\chip.gif'))
         pygame.sprite.Sprite.__init__(self)
         # initial location of the white circle and number on the ball, a.k.a
         # ball label
@@ -112,49 +114,56 @@ class BallSprite(pygame.sprite.Sprite):
             self.ball.update()
 
     def update_sprite(self):
-        sprite_dimension = np.repeat([config.ball_radius * 2], 2)
-        new_sprite = pygame.Surface(sprite_dimension)
-        colorkey = (200, 200, 200)
-        new_sprite.fill(self.color)
-        new_sprite.set_colorkey(colorkey)
+        #creates a 2d array with the dimensions of the sprite
+#        sprite_dimension = np.repeat([config.ball_radius * 2], 2)
 
-        label_dimension = np.repeat([self.label_size * 2], 2)
-        label = pygame.Surface(label_dimension)
-        label.fill(self.color)
-        # 1.1 instead of 1 is a hack to avoid 0 width sprite when scaling
-        dist_from_centre = 1.1 - (self.label_offset[0] ** 2 +
-                                  self.label_offset[1] ** 2) / (config.ball_radius ** 2)
+        # creates a new sprite and fills it with the ball color
+#        new_sprite = pygame.Surface(sprite_dimension)
+        #colorkey = (200, 200, 200)
+        #new_sprite.fill(self.color)
+        #new_sprite.set_colorkey(colorkey)
 
-        if self.label_offset[2] > 0:
-            pygame.draw.circle(label, (255, 255, 255),
-                               label_dimension // 2, self.label_size)
+        #region draws the label circle and number and stripe on the sprite
+#        label_dimension = np.repeat([self.label_size * 2], 2)
+#        label = pygame.Surface(label_dimension)
+#        label.fill(self.color)
+#        # 1.1 instead of 1 is a hack to avoid 0 width sprite when scaling
+#        dist_from_centre = 1.1 - (self.label_offset[0] ** 2 +
+#                                  self.label_offset[1] ** 2) / (config.ball_radius ** 2)
+#
+#        if self.label_offset[2] > 0:
+#            pygame.draw.circle(label, (255, 255, 255),
+#                               label_dimension // 2, self.label_size)
+#
+#            if self.number != 0:
+#                label.blit(self.text, (config.ball_radius - self.text_length) / 2)
+#
+#            # hack to avoid div by zero
+#            if self.label_offset[0] != 0:
+#                angle = -math.degrees(
+#                    math.atan(self.label_offset[1] / self.label_offset[0]))
+#                label = pygame.transform.scale(
+#                    label, (int(config.ball_radius * dist_from_centre), config.ball_radius))
+#                label = pygame.transform.rotate(label, angle)
+        
 
-            if self.number != 0:
-                label.blit(self.text, (config.ball_radius - self.text_length) / 2)
+#        new_sprite.blit(
+#            label, self.label_offset[:2] + (sprite_dimension - label.get_size()) / 2)
+        #if self.ball_type == BallType.Striped:
+        #    self.ball_stripe.draw_stripe(new_sprite)
+        #endregion
 
-            # hack to avoid div by zero
-            if self.label_offset[0] != 0:
-                angle = -math.degrees(
-                    math.atan(self.label_offset[1] / self.label_offset[0]))
-                label = pygame.transform.scale(
-                    label, (int(config.ball_radius * dist_from_centre), config.ball_radius))
-                label = pygame.transform.rotate(label, angle)
+        #region applies a circular mask on the sprite using colorkey
+#        grid_2d = np.mgrid[-config.ball_radius:config.ball_radius +
+#                                               1, -config.ball_radius:config.ball_radius + 1]
+#        is_outside = config.ball_radius < np.hypot(*grid_2d)
 
-        new_sprite.blit(
-            label, self.label_offset[:2] + (sprite_dimension - label.get_size()) / 2)
-        if self.ball_type == BallType.Striped:
-            self.ball_stripe.draw_stripe(new_sprite)
+#        for xy in itertools.product(range(config.ball_radius * 2 + 1), repeat=2):
+#            if is_outside[xy]:
+#                new_sprite.set_at(xy, colorkey)
+        #endregion
 
-        # applies a circular mask on the sprite using colorkey
-        grid_2d = np.mgrid[-config.ball_radius:config.ball_radius +
-                                               1, -config.ball_radius:config.ball_radius + 1]
-        is_outside = config.ball_radius < np.hypot(*grid_2d)
-
-        for xy in itertools.product(range(config.ball_radius * 2 + 1), repeat=2):
-            if is_outside[xy]:
-                new_sprite.set_at(xy, colorkey)
-
-        self.image = new_sprite
+        #self.image = new_sprite
         self.rect = self.image.get_rect()
         self.top_left = self.ball.pos - config.ball_radius
         self.rect.center = self.ball.pos.tolist()

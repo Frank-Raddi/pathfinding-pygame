@@ -12,6 +12,8 @@ def point_distance(p1, p2):
 
 def distance_less_equal(p1, p2, dist):
     # does distance comparisons without calculating square roots
+    # using the fact that a^2 + b^2 <= c^2 is equivalent to a <= c and b <= c
+    # pythagorean theorem
     dist_diff = p1 - p2
     return (dist_diff[0] ** 2 + dist_diff[1] ** 2) <= dist ** 2
 

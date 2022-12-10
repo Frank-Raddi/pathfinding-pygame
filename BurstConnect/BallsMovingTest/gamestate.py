@@ -37,17 +37,17 @@ class GameState:
     def mark_one_frame(self):
         self.fps_clock.tick(config.fps_limit)
 
-    def create_white_ball(self):
-        self.white_ball = ball.BallSprite(0)
-        ball_pos = config.white_ball_initial_pos
-        while check_if_ball_touches_balls(ball_pos, 0, self.balls):
-            ball_pos = [random.randint(int(config.table_margin + config.ball_radius + config.hole_radius),
-                                       int(config.white_ball_initial_pos[0])),
-                        random.randint(int(config.table_margin + config.ball_radius + config.hole_radius),
-                                       int(config.resolution[1] - config.ball_radius - config.hole_radius))]
-        self.white_ball.move_to(ball_pos)
-        self.balls.add(self.white_ball)
-        self.all_sprites.add(self.white_ball)
+#    def create_white_ball(self):
+#        self.white_ball = ball.BallSprite(0)
+#        ball_pos = config.white_ball_initial_pos
+#        while check_if_ball_touches_balls(ball_pos, 0, self.balls):
+#            ball_pos = [random.randint(int(config.table_margin + config.ball_radius + config.hole_radius),
+#                                       int(config.white_ball_initial_pos[0])),
+#                        random.randint(int(config.table_margin + config.ball_radius + config.hole_radius),
+#                                       int(config.resolution[1] - config.ball_radius - config.hole_radius))]
+#        self.white_ball.move_to(ball_pos)
+#        self.balls.add(self.white_ball)
+#        self.all_sprites.add(self.white_ball)
 
     def game_event_handler(self, event):
         if event.type == "POTTED":
@@ -115,6 +115,8 @@ class GameState:
         self.all_sprites.update(self)
         if update:
             pygame.display.flip()
+        
+        #print(self.fps())
         self.mark_one_frame()
 
     def all_not_moving(self):
@@ -132,7 +134,7 @@ class GameState:
         # holes_x and holes_y holds the possible xs and ys of the table holes
         # with a position ID in the second tuple field
         # so the top left hole has id 1,1
-        holes_x = [(config.table_margin + 100, 1), (config.resolution[0] /
+        holes_x = [(config.table_margin + config.resolution[0]/5, 1), (config.resolution[0] /
                                               2, 2), (config.resolution[0] - config.table_margin, 3)]
         holes_y = [(config.table_margin, 1),
                    (config.resolution[1] - config.table_margin, 2)]

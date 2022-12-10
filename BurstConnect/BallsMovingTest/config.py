@@ -11,22 +11,26 @@ def get_default_font(size):
 
 
 def set_max_resolution():
-    infoObject = pygame.display.Info()
     global resolution
-    global white_ball_initial_pos
-    resolution = np.array([infoObject.current_w, infoObject.current_h])
-    white_ball_initial_pos = (resolution + [table_margin + hole_radius, 0]) * [0.25, 0.5]
+    if fullscreen:
+        infoObject = pygame.display.Info()
+        resolution = np.array([infoObject.current_w, infoObject.current_h])
+    else:
+        resolution = np.array([450, 800])
+
+    global table_margin
+    table_margin = resolution[0] / 320
 
 # window settings
 fullscreen = False
 # fullscreen resolution can only be known after initialising the screen
-if not fullscreen:
-    resolution = np.array([1600, 900])
-window_caption = "Pool"
-fps_limit = 60
+#if not fullscreen:
+#global resolution
+#resolution = np.array([450, 800])
+window_caption = "BurstConnect"
+fps_limit = 30
 
 # table settings
-table_margin = 5
 table_side_color = (200, 200, 0)
 table_color = (0, 100, 0)
 separation_line_color = (200, 200, 200)
@@ -55,7 +59,7 @@ cue_safe_displacement = 1
 aiming_line_length = 14
 
 # ball settings
-total_ball_num = 50
+total_ball_num = 100
 ball_radius = 10
 ball_mass = 14
 speed_angle_threshold = 0.09
@@ -85,8 +89,8 @@ ball_stripe_point_num = 25
 ball_starting_place_ratio = [np.random.randint(2, 8)*.1, np.random.randint(2, 8)*.1]
 # in fullscreen mode the resolution is only available after initialising the screen
 # and if the screen wasn't initialised the resolution variable won't exist
-if 'resolution' in locals():
-    white_ball_initial_pos = (resolution + [table_margin + hole_radius, 0]) * [0.25, 0.5]
+#if 'resolution' in locals():
+#    white_ball_initial_pos = (resolution + [table_margin + hole_radius, 0]) * [0.25, 0.5]
 ball_label_text_size = 10
 
 # physics
