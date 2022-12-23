@@ -18,7 +18,7 @@ class Ball():
         #self.velocity = np.zeros(2, dtype=float)
 
         self.velocity = np.random.uniform(size=2, low=-8, high=8)# * np.random.choice([np.random.randint(-8, -4), np.random.randint(4, 8)])
-        self.pos = np.random.rand(2)# * np.random.randint(.2, .8) * config.resolution
+        self.pos = np.random.uniform(size=2, low=.2, high=.8) * config.resolution# * np.random.randint(.2, .8) * config.resolution
 
     def apply_force(self, force, time=1):
         # f = ma, v = u + at -> v = u + (f/m)*t
@@ -84,7 +84,7 @@ class BallSprite(pygame.sprite.Sprite):
         #    self.ball_stripe = StripedBall()
         self.ball = Ball()
         self.image = pygame.image.load(
-            os.path.join('BurstConnect\\BurstConnect\\BallsMovingTest\\chip.gif'))
+            os.path.join('BurstConnect\\BurstConnect\\BallsMovingTest\\chip.png'))
         pygame.sprite.Sprite.__init__(self)
         # initial location of the white circle and number on the ball, a.k.a
         # ball label

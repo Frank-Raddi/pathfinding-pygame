@@ -23,11 +23,12 @@ def resolve_all_collisions(balls, holes, table_sides):
     # ball list is shuffled to randomize ball collisions on the 1st break
     random.shuffle(ball_list)
 
-
-    for ball_combination in itertools.combinations(ball_list, 2):
-        if physics.ball_collision_check(ball_combination[0].ball, ball_combination[1].ball):
-            physics.collide_balls(ball_combination[0].ball, ball_combination[1].ball)
-            zope.event.notify(event.GameEvent("COLLISION", ball_combination))
+    # collides balls with each other
+    if config.collision:
+        for ball_combination in itertools.combinations(ball_list, 2):
+            if physics.ball_collision_check(ball_combination[0].ball, ball_combination[1].ball):
+                physics.collide_balls(ball_combination[0].ball, ball_combination[1].ball)
+#            zope.event.notify(event.GameEvent("COLLISION", ball_combination))
 
 
 def check_if_ball_touches_balls(target_ball_pos, target_ball_number, balls):

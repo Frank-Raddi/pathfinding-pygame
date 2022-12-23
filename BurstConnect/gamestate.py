@@ -9,7 +9,6 @@ import zope.event
 
 import ball
 import config
-import cue
 import event
 import graphics
 import table_sprites
@@ -67,12 +66,12 @@ class GameState:
 
         #self.create_white_ball()
         # randomizes the sequence of balls on the table
-        ball_placement_sequence = list(range(1, config.total_ball_num))
-        random.shuffle(ball_placement_sequence)
+        #ball_placement_sequence = list(range(1, config.total_ball_num))
+        #random.shuffle(ball_placement_sequence)
 
-        for i in ball_placement_sequence:
+        for i in list(range(1, config.total_ball_num)):
             ball_iteration = ball.BallSprite(i)
-            ball_iteration.move_to(initial_place)# + coord_shift * counter)
+            #ball_iteration.move_to(initial_place)# + coord_shift * counter)
             if counter[1] == counter[0]:
                 counter[0] += 1
                 counter[1] = -counter[0]
@@ -119,13 +118,13 @@ class GameState:
         #print(self.fps())
         self.mark_one_frame()
 
-    def all_not_moving(self):
-        return_value = True
-        for ball in self.balls:
-            if np.count_nonzero(ball.ball.velocity) > 0:
-                return_value = False
-                break
-        return return_value
+#    def all_not_moving(self):
+#        return_value = True
+#        for ball in self.balls:
+#            if np.count_nonzero(ball.ball.velocity) > 0:
+#                return_value = False
+#                break
+#        return return_value
 
     #region generate table
 
@@ -134,19 +133,19 @@ class GameState:
         # holes_x and holes_y holds the possible xs and ys of the table holes
         # with a position ID in the second tuple field
         # so the top left hole has id 1,1
-        holes_x = [(config.table_margin + config.resolution[0]/5, 1), (config.resolution[0] /
-                                              2, 2), (config.resolution[0] - config.table_margin, 3)]
-        holes_y = [(config.table_margin, 1),
-                   (config.resolution[1] - config.table_margin, 2)]
+        play_area_x = [(config.table_margin, 1), (config.resolution[0] /2, 2),
+         ((.76 if config.resolution[0] > config.resolution[1] else 1) * config.resolution[0] - config.table_margin, 3)]
+        play_area_y = [(config.table_margin + (config.resolution[1] * .12 if config.resolution[1] > config.resolution[0] else 0), 1),
+                   ((.88 if config.resolution[1] > config.resolution[0] else 1) * config.resolution[1] - config.table_margin, 2)]
         # next three lines are a hack to make and arrange the hole coordinates
         # in the correct sequence
         all_hole_positions = np.array(
-            list(itertools.product(holes_y, holes_x)))
+            list(itertools.product(play_area_y, play_area_x)))
         all_hole_positions = np.fliplr(all_hole_positions)
         all_hole_positions = np.vstack(
             (all_hole_positions[:3], np.flipud(all_hole_positions[3:])))
         for hole_pos in all_hole_positions:
-            self.holes.add(table_sprites.Hole(hole_pos[0][0], hole_pos[1][0]))
+            #self.holes.add(table_sprites.Hole(hole_pos[0][0], hole_pos[1][0]))
             # this will generate the diagonal, vertical and horizontal table
             # pieces which will reflect the ball when it hits the table sides
             #
@@ -163,20 +162,20 @@ class GameState:
                 # hole is in the middle
             #    offset = config.middle_hole_offset
             #else:
-            offset = config.side_hole_offset
+            #offset = config.side_hole_offset
             #if hole_pos[1][1] == 2:
             #    offset = np.flipud(offset) * [1, -1]
             #if hole_pos[0][1] == 1:
             #    offset = np.flipud(offset) * [-1, 1]
             table_side_points = np.append(
-                table_side_points, [hole_pos[0][0], hole_pos[1][0]] + offset, axis=0)
+                table_side_points, [hole_pos[0][0], hole_pos[1][0]] + config.side_hole_offset, axis=0)
         # deletes the 1st point in array (leftover form np.empty)
         table_side_points = np.delete(table_side_points, 0, 0)
         for num, point in enumerate(table_side_points[:-1]):
             # this will skip lines inside the circle
-            if num % 4 != 1:
-                self.table_sides.append(table_sprites.TableSide(
-                    [point, table_side_points[num + 1]]))
+            #if num % 4 != 1:
+            self.table_sides.append(table_sprites.TableSide(
+                [point, table_side_points[num + 1]]))
         self.table_sides.append(table_sprites.TableSide(
             [table_side_points[-1], table_side_points[0]]))
         self.table_coloring = table_sprites.TableColoring(

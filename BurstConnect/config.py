@@ -12,17 +12,22 @@ def get_default_font(size):
 
 def set_max_resolution():
     global resolution
-    if fullscreen:
-        infoObject = pygame.display.Info()
-        resolution = np.array([infoObject.current_w, infoObject.current_h])
-    else:
+    infoObject = pygame.display.Info()
+    #upon deployment, change to if infoObject.current_w > infoObject.current_h: else:
+    if fullscreen or landscape:
+        resolution = np.array([infoObject.current_w * (1 if fullscreen else .5), infoObject.current_h * (1 if fullscreen else .5)])
+    elif test_virtical:
         resolution = np.array([450, 800])
+    else:
+        resolution = np.array([infoObject.current_w * .5, infoObject.current_h * .5])
 
     global table_margin
-    table_margin = resolution[0] / 320
+    table_margin = 0#resolution[0] / 320
 
 # window settings
 fullscreen = False
+landscape = True
+test_virtical = False
 # fullscreen resolution can only be known after initialising the screen
 #if not fullscreen:
 #global resolution
@@ -35,8 +40,8 @@ table_side_color = (200, 200, 0)
 table_color = (0, 100, 0)
 separation_line_color = (200, 200, 200)
 hole_radius = 0
-middle_hole_offset = np.array([[-hole_radius * 2, hole_radius], [-hole_radius, 0],
-                               [hole_radius, 0], [hole_radius * 2, hole_radius]])
+#middle_hole_offset = np.array([[-hole_radius * 2, hole_radius], [-hole_radius, 0],
+#                               [hole_radius, 0], [hole_radius * 2, hole_radius]])
 side_hole_offset = np.array([
     [- 2 * math.cos(math.radians(45)) * hole_radius - hole_radius, hole_radius],
     [- math.cos(math.radians(45)) * hole_radius, -
@@ -59,7 +64,8 @@ cue_safe_displacement = 1
 aiming_line_length = 14
 
 # ball settings
-total_ball_num = 100
+collision = True
+total_ball_num = 75
 ball_radius = 10
 ball_mass = 14
 speed_angle_threshold = 0.09
